@@ -1,0 +1,3 @@
+CUDA_VISIBLE_DEVICES=0 PYTHONPATH="$PWD" python train_cub.py   # CUB
+# CUDA_VISIBLE_DEVICES=0 PYTHONPATH="$PWD" python train_sun.py   # SUN
+# CUDA_VISIBLE_DEVICES=0 PYTHONPATH="$PWD" python train_awa2.py  # AWA2
