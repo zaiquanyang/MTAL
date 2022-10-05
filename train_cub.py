@@ -8,7 +8,7 @@ import numpy as np
 import wandb
 
 # init wandb from config file
-wandb.init(project='Multi-Token-Attribute-Localization ', config='wandb_config/cub_gzsl.yaml')
+wandb.init(project='Multi-Token-Attribute-Localization', config='wandb_config/cub_gzsl.yaml', name='Baseline_TransZero_1')
 config = wandb.config
 print('Config file from wandb:', config)
 

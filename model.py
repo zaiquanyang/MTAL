@@ -37,11 +37,13 @@ class TransZero(nn.Module):
         
         mask_bias = np.ones((1, self.nclass))
         mask_bias[:, self.seenclass.cpu().numpy()] *= -1
-        self.mask_bias = nn.Parameter(torch.tensor(
-            mask_bias, dtype=torch.float), requires_grad=False)
+
+        self.mask_bias = nn.Parameter(torch.tensor(mask_bias, dtype=torch.float), requires_grad=False)
+
         # mapping
         self.W_1 = nn.Parameter(nn.init.normal_(
             torch.empty(self.dim_v, config.tf_common_dim)), requires_grad=True)
+
         # transformer
         self.transformer = Transformer(
             ec_layer=config.tf_ec_layer,
@@ -57,8 +59,11 @@ class TransZero(nn.Module):
         self.weight_ce = nn.Parameter(torch.eye(self.nclass), requires_grad=False)
 
     def forward(self, input, from_img=False):
+        # input : bs x 2048 x 14 x 14
         Fs = self.resnet101(input) if from_img else input
+
         # transformer-based visual-to-semantic embedding
+        # v2s_embed : bs x 312
         v2s_embed = self.forward_feature_transformer(Fs)
         # classification
         package = {'pred': self.forward_attribute(v2s_embed),
@@ -75,9 +80,10 @@ class TransZero(nn.Module):
         # attributes
         V_n = F.normalize(self.V) if self.config.normalize_V else self.V
         # locality-augmented visual features
-        Trans_out = self.transformer(Fs, V_n)
+        Trans_out = self.transformer(Fs, V_n)  # bs x 312 x 300
         # embedding to semantic space
-        embed = torch.einsum('iv,vf,bif->bi', V_n, self.W_1, Trans_out)
+        # breakpoint()
+        embed = torch.einsum('iv,vf,bif->bi', V_n, self.W_1, Trans_out)   # bs x 312
         return embed
 
     def forward_attribute(self, embed):
@@ -98,7 +104,7 @@ class TransZero(nn.Module):
     def compute_aug_cross_entropy(self, in_package):
         Labels = in_package['batch_label']
         S_pp = in_package['pred']
-
+        # True
         if self.is_bias:
             S_pp = S_pp - self.vec_bias
 
@@ -161,10 +167,11 @@ class Transformer(nn.Module):
         self.transformer_decoder = nn.TransformerDecoder(decoder_layer, num_layers=dc_layer)
 
     def forward(self, f_cv, f_attr):
+        # breakpoint()
         # linearly map to common dim
-        h_cv = self.embed_cv(f_cv.permute(0, 2, 1))
-        h_attr = self.embed_attr(f_attr)
-        h_attr_batch = h_attr.unsqueeze(0).repeat(f_cv.shape[0], 1, 1)
+        h_cv = self.embed_cv(f_cv.permute(0, 2, 1))   # bs x 14*14 x 300
+        h_attr = self.embed_attr(f_attr)              # 312 x 300
+        h_attr_batch = h_attr.unsqueeze(0).repeat(f_cv.shape[0], 1, 1)  # bs x 312 x 300
         # visual encoder
         memory = self.transformer_encoder(h_cv).permute(1, 0, 2)
         # attribute-visual decoder
