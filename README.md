@@ -1,6 +1,7 @@
-#
+# MTAL介绍
 
-# 该项目作为研究生毕业设计的一部分工作内容，代码主要参考了AAAI2022工作 TransZero [[arXiv]](https://arxiv.org/pdf/2112.01683.pdf)， 感谢shiming chen的工作。
+该项目作为研究生毕业设计的一部分工作内容，动机是利用属性Token扩展图像的Patch Token， 作为Transformer Encoder的输入，完成各个属性的定位以及整体物体定位。
+代码主要参考了AAAI2022工作 TransZero [[arXiv]](https://arxiv.org/pdf/2112.01683.pdf)， 感谢shiming chen的工作。
 
 ## 一些准备工作
 Use [Weights & Biases](https://wandb.ai/site) (W&B) to keep track and organize the results of experiments. You may need to follow the [online documentation](https://docs.wandb.ai/quickstart) of W&B to quickstart. To run these codes, [sign up](https://app.wandb.ai/login?signup=true) an online account to track experiments or create a [local wandb server](https://hub.docker.com/r/wandb/local) using docker (recommended).
